@@ -1,3 +1,22 @@
+SOBRE O PROJETO:
+----------------
+O PedalTracker é uma aplicação para Windows desenvolvida para monitorizar e registar dados de pedais Fanatec, utilizada principalmente em simulação automóvel. Permite visualizar em tempo real e guardar a telemetria dos pedais (acelerador e travão), facilitando a análise de desempenho e a resolução de problemas de hardware ou condução. Inclui uma interface gráfica (WPF) e uma versão de consola.
+
+ARQUITETURA E OBTENÇÃO DE DADOS:
+---------------------------------
+O projeto utiliza a biblioteca IRSDKSharper para aceder à telemetria do simulador iRacing, de onde recolhe os valores dos pedais (Throttle e Brake) e outros dados relevantes (ABS, tempos de volta, delta, etc). Estes dados são lidos em tempo real através da classe IRacingService, que subscreve eventos do SDK e expõe os valores para a interface gráfica.
+
+O fluxo principal é:
+- IRacingService liga-se ao iRacing e lê os dados de telemetria (ex: Throttle, Brake, ABSActive, tempos de volta).
+- Os dados são enviados por eventos para a MainWindow, que atualiza os gráficos e indicadores visuais.
+- O componente TelemetryChart desenha os gráficos dos pedais em tempo real.
+- Os dados podem ser guardados para análise posterior na pasta Data/.
+
+O código está organizado em:
+- PedalTelemetry/Services/IRacingService.cs: ligação e leitura da telemetria do iRacing
+- PedalTelemetry/TelemetryChart.cs: visualização gráfica dos dados dos pedais
+- PedalTelemetry/MainWindow.xaml(.cs): interface gráfica e lógica de apresentação
+
 ========================================
 PedalTracker v1.0.1
 ========================================
