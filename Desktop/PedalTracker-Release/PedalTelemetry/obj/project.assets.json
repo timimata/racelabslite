@@ -1,0 +1,167 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0-windows7.0": {
+      "IRSDKSharper/1.1.4": {
+        "type": "package",
+        "dependencies": {
+          "YamlDotNet": "16.3.0"
+        },
+        "compile": {
+          "lib/net7.0-windows7.0/IRSDKSharper.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0-windows7.0/IRSDKSharper.dll": {}
+        }
+      },
+      "YamlDotNet/16.3.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/YamlDotNet.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/YamlDotNet.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "IRSDKSharper/1.1.4": {
+      "sha512": "jjbJWfWlqL0i9WwbLIC9zv9lBmdcZBldyg0IfLYc0gsgeaNRTRfxpfjHGQFsVu9LKPjXmpAQ2J7/WJ3d3Kx8SA==",
+      "type": "package",
+      "path": "irsdksharper/1.1.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "README.md",
+        "irsdksharper.1.1.4.nupkg.sha512",
+        "irsdksharper.nuspec",
+        "lib/net471/IRSDKSharper.dll",
+        "lib/net6.0-windows7.0/IRSDKSharper.dll",
+        "lib/net7.0-windows7.0/IRSDKSharper.dll"
+      ]
+    },
+    "YamlDotNet/16.3.0": {
+      "sha512": "SgMOdxbz8X65z8hraIs6hOEdnkH6hESTAIUa7viEngHOYaH+6q5XJmwr1+yb9vJpNQ19hCQY69xbFsLtXpobQA==",
+      "type": "package",
+      "path": "yamldotnet/16.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "images/yamldotnet.png",
+        "lib/net47/YamlDotNet.dll",
+        "lib/net47/YamlDotNet.xml",
+        "lib/net6.0/YamlDotNet.dll",
+        "lib/net6.0/YamlDotNet.xml",
+        "lib/net8.0/YamlDotNet.dll",
+        "lib/net8.0/YamlDotNet.xml",
+        "lib/netstandard2.0/YamlDotNet.dll",
+        "lib/netstandard2.0/YamlDotNet.xml",
+        "lib/netstandard2.1/YamlDotNet.dll",
+        "lib/netstandard2.1/YamlDotNet.xml",
+        "yamldotnet.16.3.0.nupkg.sha512",
+        "yamldotnet.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0-windows7.0": [
+      "IRSDKSharper >= 1.1.4"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\tiago\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\tiago\\Desktop\\PedalTracker-Release\\PedalTelemetry\\PedalTelemetry.csproj",
+      "projectName": "PedalTelemetry",
+      "projectPath": "C:\\Users\\tiago\\Desktop\\PedalTracker-Release\\PedalTelemetry\\PedalTelemetry.csproj",
+      "packagesPath": "C:\\Users\\tiago\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tiago\\Desktop\\PedalTracker-Release\\PedalTelemetry\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\tiago\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0-windows"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.100"
+    },
+    "frameworks": {
+      "net8.0-windows7.0": {
+        "targetAlias": "net8.0-windows",
+        "dependencies": {
+          "IRSDKSharper": {
+            "target": "Package",
+            "version": "[1.1.4, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.23, 8.0.23]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[8.0.23, 8.0.23]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.23, 8.0.23]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[8.0.23, 8.0.23]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WPF": {
+            "privateAssets": "none"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
