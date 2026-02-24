@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using IRSDKSharper;
 
 namespace PedalTelemetry.Services;
@@ -21,6 +22,10 @@ public class TelemetryUpdateEventArgs : EventArgs
     public float DeltaToBest { get; init; }
     public bool DeltaValid { get; init; }
     public ConnectionState State { get; init; }
+    public int Incidents { get; init; }
+    public int MaxIncidents { get; init; }
+    public double SessionTimeRemain { get; init; }
+    public int Sof { get; init; }
 }
 
 public class IRacingService : IDisposable
@@ -32,6 +37,9 @@ public class IRacingService : IDisposable
     public event EventHandler<ConnectionState>? StateChanged;
 
     private ConnectionState _lastState = ConnectionState.Disconnected;
+    private int _maxIncidents;
+    private int _sof;
+    private bool _sessionInfoParsed;
 
     public IRacingService()
     {
@@ -47,22 +55,54 @@ public class IRacingService : IDisposable
 
     private void OnConnected()
     {
+        _sessionInfoParsed = false;
         UpdateState(ConnectionState.InMenu);
     }
 
     private void OnDisconnected()
     {
+        _sessionInfoParsed = false;
         UpdateState(ConnectionState.Disconnected);
+    }
+
+    private void ParseSessionInfo()
+    {
+        try
+        {
+            var info = _sdk.Data.SessionInfo;
+            if (info == null) return;
+
+            // Parse IncidentLimit from WeekendOptions
+            var incLimit = info.WeekendInfo?.WeekendOptions?.IncidentLimit;
+            if (!string.IsNullOrEmpty(incLimit))
+                _maxIncidents = incLimit == "unlimited" ? -1 : int.TryParse(incLimit, out int n) ? n : -1;
+
+            // Calculate SOF from average iRating of all drivers
+            var drivers = info.DriverInfo?.Drivers;
+            if (drivers != null && drivers.Count > 0)
+            {
+                var ratings = drivers.Where(d => d.IRating > 0 && d.CarIsPaceCar == 0 && d.IsSpectator == 0).Select(d => d.IRating).ToList();
+                if (ratings.Count > 0)
+                    _sof = (int)ratings.Average();
+            }
+
+            _sessionInfoParsed = true;
+        }
+        catch { /* ignore parse errors */ }
     }
 
     private void OnTelemetryData()
     {
         try
         {
+            if (!_sessionInfoParsed)
+                ParseSessionInfo();
+
             float throttle = _sdk.Data.GetFloat("Throttle");
             float brake = _sdk.Data.GetFloat("Brake");
             bool abs = false;
-            try { abs = _sdk.Data.GetBool("ABSActive"); } catch { abs = false; }
+            try { abs = _sdk.Data.GetBool("BrakeABSactive"); } catch { }
+            if (!abs) { try { abs = _sdk.Data.GetFloat("BrakeABSCutPct") > 0; } catch { } }
             float lastLap = _sdk.Data.GetFloat("LapLastLapTime");
             float bestLap = _sdk.Data.GetFloat("LapBestLapTime");
             float delta = _sdk.Data.GetFloat("LapDeltaToBestLap");
@@ -70,6 +110,12 @@ public class IRacingService : IDisposable
             bool isOnTrack = _sdk.Data.GetBool("IsOnTrack");
             bool onPitRoad = _sdk.Data.GetBool("OnPitRoad");
             int trackSurface = _sdk.Data.GetInt("PlayerTrackSurface");
+
+            int incidents = 0;
+            try { incidents = _sdk.Data.GetInt("PlayerCarMyIncidentCount"); } catch { }
+
+            double timeRemain = 0;
+            try { timeRemain = _sdk.Data.GetDouble("SessionTimeRemain"); } catch { }
 
             // Determine state
             ConnectionState state;
@@ -92,7 +138,11 @@ public class IRacingService : IDisposable
                 BestLapTime = bestLap,
                 DeltaToBest = delta,
                 DeltaValid = deltaOk,
-                State = state
+                State = state,
+                Incidents = incidents,
+                MaxIncidents = _maxIncidents,
+                SessionTimeRemain = timeRemain,
+                Sof = _sof
             });
         }
         catch

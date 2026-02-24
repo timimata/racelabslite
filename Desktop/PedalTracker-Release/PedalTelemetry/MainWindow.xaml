@@ -9,6 +9,8 @@
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
+        Topmost="True"
+        ShowInTaskbar="False"
         Closing="Window_Closing">
     <Border Background="#FF1A1A1A" CornerRadius="4" BorderBrush="#FF333333" BorderThickness="1">
         <Grid>
@@ -21,10 +23,37 @@
             <!-- Title Bar (drag area + minimize/close) -->
             <Border Grid.Row="0" Background="#FF222222" CornerRadius="4,4,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- SOF (left) -->
+                    <TextBlock Grid.Column="0" x:Name="SofLabel" Text="SOF —" Foreground="#FF999999" FontSize="10" FontFamily="Segoe UI" FontWeight="SemiBold"
+                               HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    <!-- Time remaining (center) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" Foreground="#FF666666" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBlock x:Name="TimeRemainLabel" Text="" Foreground="#FF999999" FontSize="10" FontFamily="Segoe UI" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <!-- Incidents + Buttons (right) -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0">
+                        <TextBlock Text="Incidents" Foreground="#FF666666" FontSize="9" FontFamily="Segoe UI" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBlock x:Name="IncidentsLabel" Text="x 0/-" Foreground="#FF999999" FontSize="10" FontFamily="Segoe UI" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Button x:Name="SettingsButton" Content="&#xE713;" Style="{StaticResource TitleButton}" Click="Settings_Click" FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE921;" Style="{StaticResource TitleButton}" Click="Minimize_Click" FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE8BB;" Style="{StaticResource TitleButton}" Click="Close_Click" FontFamily="Segoe MDL2 Assets"/>
                     </StackPanel>
+                    <Popup x:Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
+                           StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                        <Border Background="#FF222222" BorderBrush="#FF444444" BorderThickness="1" CornerRadius="4" Padding="12,8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Opacity" Foreground="#FF999999" FontSize="9" FontFamily="Segoe UI" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <Slider x:Name="OpacitySlider" Width="80" Minimum="0.3" Maximum="1.0" Value="1.0" VerticalAlignment="Center"
+                                        ValueChanged="OpacitySlider_ValueChanged"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                 </Grid>
             </Border>
 
@@ -86,27 +115,19 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Connection Status + Opacity -->
+                    <!-- Connection Status -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <Ellipse Width="6" Height="6" x:Name="StatusDot" Fill="#FFE02020" Margin="0,0,4,0"/>
-                        <TextBlock x:Name="StatusLabel" Text="iRACING" Foreground="#FFAAAAAA" FontSize="9" FontWeight="Bold" FontFamily="Segoe UI" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="StatusText" Text=" Disconnected" Foreground="#FF777777" FontSize="9" FontFamily="Segoe UI" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
-                        <TextBlock Text="Opacity" Foreground="#FF555555" FontSize="8" FontFamily="Segoe UI" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <Slider x:Name="OpacitySlider" Width="60" Minimum="0.3" Maximum="1.0" Value="1.0" VerticalAlignment="Center"
-                                ValueChanged="OpacitySlider_ValueChanged"/>
+                        <TextBlock x:Name="StatusText" Text="Disconnected" Foreground="#FF777777" FontSize="9" FontFamily="Segoe UI" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Delta -->
-                    <Border Grid.Column="2" Background="#FF2A2A2A" CornerRadius="3" Padding="20,3" Margin="6,4">
+                    <Border Grid.Column="1" x:Name="DeltaBorder" Background="#FF2A2A2A" CornerRadius="3" Padding="20,3" Margin="6,4">
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="DELTA" Foreground="#FF888888" FontSize="8" FontWeight="SemiBold" FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,0,0,2"/>
                             <TextBlock x:Name="DeltaLabel" Text="—" Foreground="#FFCCCCCC" FontSize="14" FontWeight="Bold" FontFamily="Segoe UI" HorizontalAlignment="Center"/>
@@ -114,7 +135,7 @@
                     </Border>
 
                     <!-- Last Lap -->
-                    <Border Grid.Column="3" Background="#FF2A2A2A" CornerRadius="3" Padding="20,3" Margin="6,4">
+                    <Border Grid.Column="2" Background="#FF2A2A2A" CornerRadius="3" Padding="20,3" Margin="6,4">
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="LAST LAP" Foreground="#FF888888" FontSize="8" FontWeight="SemiBold" FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,0,0,2"/>
                             <TextBlock x:Name="LastLapLabel" Text="—" Foreground="#FFCCCCCC" FontSize="14" FontWeight="Bold" FontFamily="Segoe UI" HorizontalAlignment="Center"/>
@@ -122,7 +143,7 @@
                     </Border>
 
                     <!-- Best -->
-                    <Border Grid.Column="4" Background="#FF2A2A2A" CornerRadius="3" Padding="20,3" Margin="6,4,0,4">
+                    <Border Grid.Column="3" Background="#FF2A2A2A" CornerRadius="3" Padding="20,3" Margin="6,4,0,4">
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="BEST" Foreground="#FF888888" FontSize="8" FontWeight="SemiBold" FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,0,0,2"/>
                             <TextBlock x:Name="BestLapLabel" Text="—" Foreground="#FFCCCCCC" FontSize="14" FontWeight="Bold" FontFamily="Segoe UI" HorizontalAlignment="Center"/>

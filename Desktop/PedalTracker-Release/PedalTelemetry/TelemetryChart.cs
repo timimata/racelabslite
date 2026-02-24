@@ -80,7 +80,7 @@ public class TelemetryChart : FrameworkElement
                 10,
                 LabelBrush,
                 VisualTreeHelper.GetDpi(this).PixelsPerDip);
-            dc.DrawText(text, new Point(w - text.Width - 4, y - text.Height - 2));
+            dc.DrawText(text, new Point(w - text.Width - 4, y + 2));
         }
 
         if (_count < 2) return;
