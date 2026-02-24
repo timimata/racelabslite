@@ -4,7 +4,9 @@ O PedalTracker é uma aplicação para Windows desenvolvida para monitorizar e r
 
 ARQUITETURA E OBTENÇÃO DE DADOS:
 ---------------------------------
-O projeto utiliza a biblioteca IRSDKSharper para aceder à telemetria do simulador iRacing, de onde recolhe os valores dos pedais (Throttle e Brake) e outros dados relevantes (ABS, tempos de volta, delta, etc). Estes dados são lidos em tempo real através da classe IRacingService, que subscreve eventos do SDK e expõe os valores para a interface gráfica.
+O projeto utiliza uma abordagem híbrida para recolha de dados:
+1. Telemetria do Simulador: Utiliza a biblioteca IRSDKSharper para aceder aos dados do iRacing (ABS, tempos de volta, delta) via Memory Mapped Files.
+2. Hardware Input: Utiliza DirectInput para leitura direta dos eixos físicos (RAW Input), permitindo diagnóstico de hardware independente do simulador.
 
 O fluxo principal é:
 - IRacingService liga-se ao iRacing e lê os dados de telemetria (ex: Throttle, Brake, ABSActive, tempos de volta).
@@ -24,7 +26,7 @@ PedalTracker v1.0.1
 REQUISITOS:
 -----------
 - Windows 10/11
-- .NET 10.0 Runtime (será instalado automaticamente se necessário)
+- .NET Runtime (Verificar INSTALL.bat ou usar versão Self-Contained)
 - Pedais Fanatec conectados
 
 COMO EXECUTAR:
@@ -37,10 +39,10 @@ COMO EXECUTAR:
 CONFIGURAÇÃO:
 -------------
 - O programa irá detectar automaticamente os pedais Fanatec
-- Os dados são guardados na pasta "Data"
-- Os eixos estão configurados para:
-  * Y = Acelerador (Throttle)
-  * RZ = Travão (Brake)
+- As configurações de eixos e sensibilidade podem ser alteradas no ficheiro 'appsettings.json' (se implementado) ou requerem recompilação na versão atual.
+- Padrão atual:
+  * Eixo Y  -> Acelerador
+  * Eixo RZ -> Travão
 
 RESOLUÇÃO DE PROBLEMAS:
 -----------------------
@@ -50,7 +52,7 @@ Se os pedais não forem detectados:
 3. Execute o programa como Administrador
 
 Se os eixos estiverem trocados:
-- É necessário reconfigurar o código fonte
+- Verifique a configuração no código ou no ficheiro JSON de definições.
 
 FICHEIROS INCLUÍDOS:
 --------------------
@@ -61,7 +63,14 @@ FICHEIROS INCLUÍDOS:
 - SharpDX.DirectInput.dll  - Dependência DirectInput
 - *.deps.json              - Dependências
 - *.runtimeconfig.json     - Configuração runtime
+- appsettings.json         - Ficheiro de configuração (Template)
 - Data/                    - Pasta para guardar dados
+
+ROADMAP (Futuro):
+-----------------
+[ ] Migração de SharpDX para Vortice.Windows (SharpDX descontinuado)
+[ ] Interface de mapeamento de eixos (UI)
+[ ] Suporte a múltiplos dispositivos USB simultâneos
 
 ========================================
 Desenvolvido para monitorizar telemetria de pedais Fanatec

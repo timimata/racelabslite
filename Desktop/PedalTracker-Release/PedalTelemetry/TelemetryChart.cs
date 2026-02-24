@@ -87,8 +87,7 @@ public class TelemetryChart : FrameworkElement
 
         // Draw traces
         DrawTrace(dc, _throttleBuffer, ThrottlePen, w, h);
-        DrawTrace(dc, _brakeBuffer, BrakePen, w, h);
-        DrawAbsTrace(dc, _brakeBuffer, _absBuffer, AbsPen, w, h);
+        DrawBrakeTrace(dc, w, h);
     }
 
     private void DrawTrace(DrawingContext dc, float[] buffer, Pen pen, double w, double h)
@@ -114,31 +113,63 @@ public class TelemetryChart : FrameworkElement
         dc.DrawGeometry(null, pen, geometry);
     }
 
-    // Desenha segmentos laranja (ABS) sobrepostos à linha de freio
-    private void DrawAbsTrace(DrawingContext dc, float[] brakeBuffer, bool[] absBuffer, Pen pen, double w, double h)
+    // Desenha a linha de travão mudando de cor conforme o ABS: vermelho normal, laranja quando ABS ativo
+    private void DrawBrakeTrace(DrawingContext dc, double w, double h)
     {
         int startIndex = (_writeIndex - _count + BufferSize) % BufferSize;
         double xStep = w / (BufferSize - 1);
-        StreamGeometry geometry = new StreamGeometry();
-        using (var ctx = geometry.Open())
+
+        // Acumular segmentos por cor (vermelho vs laranja)
+        StreamGeometry? currentGeometry = null;
+        StreamGeometryContext? currentCtx = null;
+        bool currentIsAbs = _absBuffer[startIndex];
+        var geometries = new System.Collections.Generic.List<(StreamGeometry geo, Pen pen)>();
+
+        void FlushGeometry()
         {
-            bool inAbs = false;
-            for (int i = 1; i < _count; i++)
+            if (currentCtx != null && currentGeometry != null)
             {
-                int idxPrev = (startIndex + i - 1) % BufferSize;
-                int idx = (startIndex + i) % BufferSize;
-                double x0 = (i - 1) * xStep;
-                double y0 = h - (h * brakeBuffer[idxPrev]);
-                double x1 = i * xStep;
-                double y1 = h - (h * brakeBuffer[idx]);
-                if (absBuffer[idx])
-                {
-                    ctx.BeginFigure(new Point(x0, y0), false, false);
-                    ctx.LineTo(new Point(x1, y1), true, true);
-                }
+                ((IDisposable)currentCtx).Dispose();
+                currentGeometry.Freeze();
+                geometries.Add((currentGeometry, currentIsAbs ? AbsPen : BrakePen));
             }
         }
-        geometry.Freeze();
-        dc.DrawGeometry(null, pen, geometry);
+
+        for (int i = 0; i < _count; i++)
+        {
+            int idx = (startIndex + i) % BufferSize;
+            double x = i * xStep;
+            double y = h - (h * _brakeBuffer[idx]);
+            bool isAbs = _absBuffer[idx];
+
+            if (i == 0)
+            {
+                currentIsAbs = isAbs;
+                currentGeometry = new StreamGeometry();
+                currentCtx = currentGeometry.Open();
+                currentCtx.BeginFigure(new Point(x, y), false, false);
+            }
+            else if (isAbs != currentIsAbs)
+            {
+                // Mudança de estado: continuar até este ponto, depois trocar
+                currentCtx!.LineTo(new Point(x, y), true, true);
+                FlushGeometry();
+
+                // Começar novo segmento com nova cor
+                currentIsAbs = isAbs;
+                currentGeometry = new StreamGeometry();
+                currentCtx = currentGeometry.Open();
+                currentCtx.BeginFigure(new Point(x, y), false, false);
+            }
+            else
+            {
+                currentCtx!.LineTo(new Point(x, y), true, true);
+            }
+        }
+
+        FlushGeometry();
+
+        foreach (var (geo, pen) in geometries)
+            dc.DrawGeometry(null, pen, geo);
     }
 }

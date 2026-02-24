@@ -84,22 +84,18 @@ public partial class MainWindow : Window
                 case ConnectionState.Disconnected:
                     StatusDot.Fill = RedBrush;
                     StatusText.Text = "  Disconnected";
-                    TitleDot.Fill = RedBrush;
                     break;
                 case ConnectionState.InMenu:
                     StatusDot.Fill = OrangeBrush;
                     StatusText.Text = "  In Menu";
-                    TitleDot.Fill = OrangeBrush;
                     break;
                 case ConnectionState.InPit:
                     StatusDot.Fill = OrangeBrush;
                     StatusText.Text = "  In Pit / Menu";
-                    TitleDot.Fill = OrangeBrush;
                     break;
                 case ConnectionState.OnTrack:
                     StatusDot.Fill = GreenBrush;
                     StatusText.Text = "  On Track";
-                    TitleDot.Fill = GreenBrush;
                     break;
             }
         });
@@ -130,6 +126,7 @@ public partial class MainWindow : Window
 
     private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
+    private void Copy_Click(object sender, RoutedEventArgs e) { /* Future: copy telemetry data */ }
     private void Settings_Click(object sender, RoutedEventArgs e) { /* Future: settings popup */ }
 
     private void OpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
